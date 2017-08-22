@@ -12,16 +12,27 @@ def read_rss():
     response = s.post(url)
     #print(response.text)
 
-    # Parseamos el xtml
+    # Parseamos el xml
     xml = BeautifulSoup(response.text, "xml")
     items = xml.find_all("item")
 
+    list_of_news = []
     for item in items:
-        print(item.find("title").text)
-        print(item.find("link").text)
-        print(item.find("dc:date").text)
+        #print(item.find("title").text)
+        #print(item.find("link").text)
+        #print(item.find("dc:date").text)
         #print(item.find("pubDate"))
-        print("---")
-        #print(item)
+        new = {
+            'title': item.find("title").text,
+            'link': item.find("link").text,
+            'date': item.find("dc:date").text
+            }
+        list_of_news.append(new)
+    return list_of_news
 
-read_rss()
+'''
+list = read_rss()
+print(list[0]['title'])
+print(list[0]['link'])
+print(list[0]['date'])
+'''
