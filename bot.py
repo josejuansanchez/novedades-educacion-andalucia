@@ -17,6 +17,7 @@ bot.
 """
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ParseMode
 import logging
 from get_rss import *
 
@@ -32,24 +33,24 @@ logger = logging.getLogger(__name__)
 def start(bot, update):
     update.message.reply_text('Hi!')
 
-
 def help(bot, update):
     update.message.reply_text('Help!')
-
 
 def echo(bot, update):
     update.message.reply_text(update.message.text)
 
-
 def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
-def get_news(bot, update):
-    list = read_rss()
+def news(bot, update):
+    list = get_last_news()
     for item in list:
-        update.message.reply_text(item['title'])
-        update.message.reply_text(item['link'])
-        #update.message.reply_text(item['date'])
+        update.message.reply_text(item['title_and_link'])
+
+def all(bot, update):
+    list = get_all_news()
+    for item in list:
+        update.message.reply_text(item['title_and_link'])
 
 def main():
     # Create the EventHandler and pass it your bot's token.
@@ -61,7 +62,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("news", get_news))
+    dp.add_handler(CommandHandler("news", news))
+    dp.add_handler(CommandHandler("all", all))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
