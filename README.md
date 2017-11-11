@@ -48,7 +48,7 @@ Una vez que hemos creado el archivo `config.json` tenemos que configurar los par
 Instalamos `virtualenv` vía `pip`:
 
 ```bash
-pip install virtualenv
+pip3 install virtualenv
 ```
 
 Comprobamos que se ha instalado correctamente:
@@ -63,12 +63,6 @@ Creamos un entorno virtual para nuestro proyecto:
 virtualenv my_virtualenv
 ```
 
-Instalamos los paquetes necesarios para trabajar con nuestro proyecto. La lista de paquetes está definida en el archivo `requirements.txt`:
-
-```bash
-pip3 install -r requirements.txt
-```
-
 Para poder usar nuestro entorno virtual es necesario activarlo:
 
 ```bash
@@ -79,6 +73,14 @@ Para desactivar el entorno virtual ejecutaremos:
 
 ```bash
 deactivate
+```
+
+## Instalación de dependencias
+
+Instalamos los paquetes necesarios para trabajar con nuestro proyecto. La lista de paquetes está definida en el archivo `requirements.txt`:
+
+```bash
+pip3 install -r requirements.txt
 ```
 
 ## Parseo de feeds RSS y ejecución el bot
