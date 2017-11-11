@@ -1,25 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Simple Bot to reply to Telegram messages
-# This program is dedicated to the public domain under the CC0 license.
 """
 This Bot uses the Updater class to handle the bot.
 
 First, a few handler functions are defined. Then, those functions are passed to
 the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
-
-Usage:
-Basic Echobot example, repeats messages.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
 """
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ParseMode
 import logging
-from get_rss import *
+from rss import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -42,15 +35,24 @@ def echo(bot, update):
 def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
-def news(bot, update):
+def today(bot, update):
+    list = get_today_news()
+
+    if (len(list) <= 0):
+        update.message.reply_text("Sin novedades")
+
+    for item in list:
+        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+
+def last(bot, update):
     list = get_last_news()
     for item in list:
-        update.message.reply_text(item['title_and_link'])
+        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
 
 def all(bot, update):
     list = get_all_news()
     for item in list:
-        update.message.reply_text(item['title_and_link'])
+        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
 
 def main():
     # Create the EventHandler and pass it your bot's token.
@@ -62,7 +64,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("news", news))
+    dp.add_handler(CommandHandler("today", today))
+    dp.add_handler(CommandHandler("last", last))
     dp.add_handler(CommandHandler("all", all))
 
     # on noncommand i.e message - echo the message on Telegram

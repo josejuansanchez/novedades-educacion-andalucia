@@ -21,24 +21,24 @@ def get_news_from_rss(url):
     xml = BeautifulSoup(response.text, "xml")
     items = xml.find_all("item")
 
-    list_of_news = []
+    news = []
     for item in items:
         new = {
             'title': item.find("title").text,
             'link': item.find("link").text,
             'date': item.find("dc:date").text
             }
-        list_of_news.append(new)
-    return list_of_news
+        news.append(new)
+    return news
 
-def save_news_in_db(list):
+def save_news_in_db(news):
     db = sqlite3.connect('data/novedades.sqlite')
     cursor = db.cursor()
 
-    for item in list:
-        title = item['title']
-        link = item['link']
-        date = item['date']
+    for new in news:
+        title = new['title']
+        link = new['link']
+        date = new['date']
         cursor.execute(
             '''INSERT INTO news (title, link, date)
             SELECT ?, ?, ?
@@ -55,21 +55,25 @@ def get_news_from_db(query):
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    list_of_news = []
-    for row in rows:
+    news = []
+    for index,row in enumerate(rows):
         new = {
-            'title_and_link': row[1] + '\n\n' + row[2]
+            'title_and_link': '<b>' + str(index + 1) + '</b>. ' + row[1] + '\n\n' + row[2]
             #'title': row[1],
             #'link': row[2],
             #'date': row[3]
             }
-        list_of_news.append(new)
+        news.append(new)
 
     db.close()
-    return list_of_news
+    return news
+
+def get_today_news():
+    query = "SELECT * FROM news WHERE date >= date('now')"
+    return get_news_from_db(query)
 
 def get_last_news():
-    query = "SELECT * FROM news WHERE date >= date('now')"
+    query = "SELECT * FROM news ORDER BY date DESC LIMIT 10"
     return get_news_from_db(query)
 
 def get_all_news():
@@ -80,8 +84,6 @@ def main():
     for url in urls:
         news = get_news_from_rss(url)
         save_news_in_db(news)
-        #news = get_news_from_db()
-        #print(news)
 
 if __name__ == '__main__':
     main()
