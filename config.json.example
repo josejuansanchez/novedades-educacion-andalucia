@@ -1,0 +1,10 @@
+{
+    "bot-token" : "427720521:AAHPBh6eWN2dCYH9Y_oleLmjE6oMJcNNtSE",
+    
+    "database" : "data/novedades.sqlite",
+    
+    "urls" : [
+        "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/",
+        "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/centro-1/-/-/true/OR/true/cm_modified/DESC/"
+    ]
+}
