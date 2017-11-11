@@ -48,6 +48,7 @@ def today(bot, update):
 
     if (len(list) <= 0):
         update.message.reply_text("Sin novedades")
+        return
 
     for item in list:
         update.message.reply_text(item['title_and_link'], ParseMode.HTML)
