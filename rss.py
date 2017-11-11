@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
+import json
 import sqlite3
 import sys
 
 import requests
 from bs4 import BeautifulSoup
 
-urls = [
-    # Profesorado
-    "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/",
 
-    # Centros
-    "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/centro-1/-/-/true/OR/true/cm_modified/DESC/"
-]
+# Read configuration file
+with open('config.json', 'r') as f:
+    config = json.load(f)
 
 def get_news_from_rss(url):
     s = requests.Session()
@@ -50,7 +48,7 @@ def save_news_in_db(news):
     db.close()
 
 def get_news_from_db(query):
-    db = sqlite3.connect('data/novedades.sqlite')
+    db = sqlite3.connect(config['database'])
     cursor = db.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
@@ -81,7 +79,7 @@ def get_all_news():
     return get_news_from_db(query)
 
 def main():
-    for url in urls:
+    for url in config['urls']:
         news = get_news_from_rss(url)
         save_news_in_db(news)
 

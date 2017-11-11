@@ -9,10 +9,18 @@ the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 """
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram import ParseMode
+import json
 import logging
+
+from telegram import ParseMode
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
 from rss import *
+
+
+# Read configuration file
+with open('config.json', 'r') as f:
+    config = json.load(f)
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -56,7 +64,7 @@ def all(bot, update):
 
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("427720521:AAHPBh6eWN2dCYH9Y_oleLmjE6oMJcNNtSE")
+    updater = Updater(config['bot-token'])
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
