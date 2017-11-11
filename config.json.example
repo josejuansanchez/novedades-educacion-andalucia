@@ -1,6 +1,6 @@
 {
-    "bot-token" : "427720521:AAHPBh6eWN2dCYH9Y_oleLmjE6oMJcNNtSE",
-    
+    "bot-token" : "PUT-YOUR-TELEGRAM-BOT-TOKEN-HERE",
+
     "database" : "data/novedades.sqlite",
     
     "urls" : [
