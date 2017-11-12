@@ -11,6 +11,7 @@ Then, the bot is started and runs until we press Ctrl-C on the command line.
 
 import json
 import logging
+import threading
 
 from telegram import ParseMode
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
@@ -18,79 +19,89 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from rss import *
 
 
-# Read configuration file
-with open('config.json', 'r') as f:
-    config = json.load(f)
+class ProfeBot(object):
 
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    def __init__(self, filename):
+        self.read_configuration_file(filename)
+
+        # Enable logging
+        logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
-logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
 
+        # Create the EventHandler and pass it your bot's token.
+        self.updater = Updater(config['bot-token'])
 
-# Define a few command handlers. These usually take the two arguments bot and
-# update. Error handlers also receive the raised TelegramError object in error.
-def start(bot, update):
-    update.message.reply_text('Hi!')
+        # Get the dispatcher to register handlers
+        self.dp = self.updater.dispatcher
 
-def help(bot, update):
-    update.message.reply_text('Help!')
+        # on different commands - answer in Telegram
+        self.dp.add_handler(CommandHandler("start", self.start))
+        self.dp.add_handler(CommandHandler("help", self.help))
+        self.dp.add_handler(CommandHandler("today", self.today))
+        self.dp.add_handler(CommandHandler("last", self.last))
+        self.dp.add_handler(CommandHandler("all", self.all))
 
-def echo(bot, update):
-    update.message.reply_text(update.message.text)
+        # log all errors
+        self.dp.add_error_handler(self.error)
 
-def error(bot, update, error):
-    logger.warn('Update "%s" caused error "%s"' % (update, error))
+        # Check if there exist news in the database
+        self.check_news_in_database()
 
-def today(bot, update):
-    list = get_today_news()
+        # Start the Bot
+        self.updater.start_polling()
 
-    if (len(list) <= 0):
-        update.message.reply_text("Sin novedades")
-        return
+        # Run the bot until you press Ctrl-C or the process receives SIGINT,
+        # SIGTERM or SIGABRT. This should be used most of the time, since
+        # start_polling() is non-blocking and will stop the bot gracefully.
+        self.updater.idle()
 
-    for item in list:
-        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+    def read_configuration_file(self, filename):
+        with open(filename, 'r') as f:
+            self.config = json.load(f)
 
-def last(bot, update):
-    list = get_last_news()
-    for item in list:
-        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+    # Define a few command handlers. These usually take the two arguments bot and
+    # update. Error handlers also receive the raised TelegramError object in error.
+    def start(self, bot, update):
+        update.message.reply_text('Hi!')
+        telegram_user = update.message.from_user
+        print(telegram_user)
 
-def all(bot, update):
-    list = get_all_news()
-    for item in list:
-        update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+    def help(self, bot, update):
+        update.message.reply_text('Help!')
 
-def main():
-    # Create the EventHandler and pass it your bot's token.
-    updater = Updater(config['bot-token'])
+    def error(self, bot, update, error):
+        self.logger.warn('Update "%s" caused error "%s"' % (update, error))
 
-    # Get the dispatcher to register handlers
-    dp = updater.dispatcher
+    def today(self, bot, update):
+        list = get_today_news()
 
-    # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("today", today))
-    dp.add_handler(CommandHandler("last", last))
-    dp.add_handler(CommandHandler("all", all))
+        if (len(list) <= 0):
+            update.message.reply_text("Sin novedades")
+            return
 
-    # on noncommand i.e message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
+        for item in list:
+            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
 
-    # log all errors
-    dp.add_error_handler(error)
+    def last(self, bot, update):
+        list = get_last_news()
+        for item in list:
+            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
 
-    # Start the Bot
-    updater.start_polling()
+    def all(self, bot, update):
+        list = get_all_news()
+        for item in list:
+            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    def check_news_in_database(self):
+        threading.Timer(3600, self.check_news_in_database).start()
 
+        list = get_today_news()
+
+        for item in list:
+            self.dp.bot.send_message(chat_id=config['chat-id'], text=item['title_and_link'], parse_mode=ParseMode.HTML)
+            set_new_as_published(item['id'])
 
 if __name__ == '__main__':
-    main()
+    ProfeBot('config.json')
