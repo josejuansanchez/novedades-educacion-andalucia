@@ -1,6 +1,6 @@
-# novedades-profes-ja
+# novedades_educacion_andalucia
 
-[Bot de Telegram][1] para recibir las últimas noticias publicadas en las secciones de [novedades del profesorado][2] y [novedades en centros][3], de la página web de la Consejería de Educación de la Junta de Andalucía.
+[Bot de Telegram][1] para recibir las últimas noticias publicadas en la página web de la [Consejería de Educación de la Junta de Andalucía][2].
 
 ## Creación del archivo `config.json`
 
@@ -10,7 +10,7 @@ Clonamos el repositorio:
 git clone https://github.com/josejuansanchez/novedades-profes-ja.git
 ```
 
-Accedemos la directorio del proyecto:
+Accedemos al directorio del proyecto:
 
 ```bash
 cd novedades-profes-ja
@@ -104,11 +104,11 @@ Para ejecutar el bot:
 
 ## Librarías utilizadas en este proyecto
 
-* [`python-telegram-bot`][4].
+* [`python-telegram-bot`][3].
 
 ## Créditos
 
-Este bot ha sido desarrollado por [José Juan Sánchez][5].
+Este bot ha sido desarrollado por [José Juan Sánchez][4].
 
 ## Licencia
 
@@ -130,7 +130,6 @@ limitations under the License.
 
 
 [1]: https://core.telegram.org/bots
-[2]: http://www.juntadeandalucia.es/educacion/portals/web/ced/profesorado
-[3]: http://www.juntadeandalucia.es/educacion/portals/web/ced/centros
-[4]: https://github.com/python-telegram-bot/python-telegram-bot
-[5]: http://josejuansanchez.org
+[2]: http://www.juntadeandalucia.es/educacion/portals/web/ced
+[3]: https://github.com/python-telegram-bot/python-telegram-bot
+[4]: http://josejuansanchez.org
