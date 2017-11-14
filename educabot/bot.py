@@ -19,7 +19,7 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from rss import *
 
 
-class ProfeBot(object):
+class EducaBot(object):
 
     def __init__(self, filename):
         self.read_configuration_file(filename)
@@ -104,4 +104,4 @@ class ProfeBot(object):
             set_new_as_published(item['id'])
 
 if __name__ == '__main__':
-    ProfeBot('config.json')
+    EducaBot('config.json')
