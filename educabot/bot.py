@@ -14,30 +14,38 @@ import logging
 import threading
 
 from telegram import ParseMode
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+from telegram.ext import CommandHandler, Updater
 
-from rss import *
+from database import DataBase
+from filehandler import FileHandler
+from rss import RSS
 
 
 class EducaBot(object):
 
-    def __init__(self, filename):
-        self.read_configuration_file(filename)
-
+    def __init__(self):
         # Enable logging
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
         self.logger = logging.getLogger(__name__)
 
+        # Create a file handler and read the configuration file
+        self.filehandler = FileHandler()
+        self.config = self.filehandler.load_json('config.json')
+
+        # Create a database instance
+        self.database = DataBase(self.config['database_path'])
+
         # Create the EventHandler and pass it your bot's token.
-        self.updater = Updater(config['bot-token'])
+        self.updater = Updater(self.config['bot_token'])
 
         # Get the dispatcher to register handlers
         self.dp = self.updater.dispatcher
 
         # on different commands - answer in Telegram
         self.dp.add_handler(CommandHandler("start", self.start))
+        self.dp.add_handler(CommandHandler("stop", self.stop))
         self.dp.add_handler(CommandHandler("help", self.help))
         self.dp.add_handler(CommandHandler("today", self.today))
         self.dp.add_handler(CommandHandler("last", self.last))
@@ -46,8 +54,8 @@ class EducaBot(object):
         # log all errors
         self.dp.add_error_handler(self.error)
 
-        # Check if there exist news in the database
-        self.check_news_in_database()
+        # Send today news to users
+        self.send_today_news_to_users()
 
         # Start the Bot
         self.updater.start_polling()
@@ -57,16 +65,15 @@ class EducaBot(object):
         # start_polling() is non-blocking and will stop the bot gracefully.
         self.updater.idle()
 
-    def read_configuration_file(self, filename):
-        with open(filename, 'r') as f:
-            self.config = json.load(f)
-
-    # Define a few command handlers. These usually take the two arguments bot and
-    # update. Error handlers also receive the raised TelegramError object in error.
     def start(self, bot, update):
-        update.message.reply_text('Hi!')
-        telegram_user = update.message.from_user
-        print(telegram_user)
+        user = update.message.from_user
+        self.database.add_user(user)
+        update.message.reply_text('¡Suscripción realizada correctamente!')
+
+    def stop(self, bot, update):
+        user = update.message.from_user
+        self.database.delete_user(user.id)
+        update.message.reply_text('Suscripción cancelada')
 
     def help(self, bot, update):
         update.message.reply_text('Help!')
@@ -75,33 +82,40 @@ class EducaBot(object):
         self.logger.warn('Update "%s" caused error "%s"' % (update, error))
 
     def today(self, bot, update):
-        list = get_today_news()
+        news = self.database.get_today_news()
 
-        if (len(list) <= 0):
+        if (len(news) <= 0):
             update.message.reply_text("Sin novedades")
             return
 
-        for item in list:
-            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+        for new in news:
+            text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
+            update.message.reply_text(text, ParseMode.HTML)
 
     def last(self, bot, update):
-        list = get_last_news()
-        for item in list:
-            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+        news = self.database.get_last_news()
+        for new in news:
+            text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
+            update.message.reply_text(text, ParseMode.HTML)
 
     def all(self, bot, update):
-        list = get_all_news()
-        for item in list:
-            update.message.reply_text(item['title_and_link'], ParseMode.HTML)
+        news = self.database.get_all_news()
+        for new in news:
+            text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
+            update.message.reply_text(text, ParseMode.HTML)
 
-    def check_news_in_database(self):
-        threading.Timer(3600, self.check_news_in_database).start()
+    def send_today_news_to_users(self):
+        threading.Timer(3600, self.send_today_news_to_users).start()
+        news = self.database.get_today_news()
+        users = self.database.get_users_id()
 
-        list = get_today_news()
+        for new in news:
+            text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
 
-        for item in list:
-            self.dp.bot.send_message(chat_id=config['chat-id'], text=item['title_and_link'], parse_mode=ParseMode.HTML)
-            set_new_as_published(item['id'])
+            for user in users:
+                if not self.database.is_new_received_by_user(new['id'], user['telegram_id']):
+                    self.dp.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
+                    self.database.add_new_received_by_user(new['id'], user['telegram_id'])
 
 if __name__ == '__main__':
-    EducaBot('config.json')
+    EducaBot()
