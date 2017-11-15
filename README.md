@@ -34,11 +34,25 @@ Una vez que hemos creado el archivo `config.json` tenemos que configurar los par
 {
     "bot-token" : "PUT-YOUR-TELEGRAM-BOT-TOKEN-HERE",
 
-    "database" : "data/novedades.sqlite",
-    
-    "urls" : [
-        "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/",
-        "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/centro-1/-/-/true/OR/true/cm_modified/DESC/"
+    "database_path" : "database/educabot.sqlite",
+
+    "sources" : [
+        {
+            "name" : "Alumnado",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/alumnado/-/-/true/AND/true/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Profesorado",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Familias",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/familia/-/-/true/AND/false/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Centros",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/centro-1/-/-/true/OR/true/cm_modified/DESC/"
+        }
     ]
 }
 ```
@@ -102,9 +116,10 @@ Para ejecutar el bot:
 
 * [Bots: An introduction for developers][1].
 
-## Librarías utilizadas en este proyecto
+## Créditos
 
 * [`python-telegram-bot`][3].
+* [RobotRSS - A Telegram RSS Bot][5].
 
 ## Créditos
 
@@ -133,3 +148,4 @@ limitations under the License.
 [2]: http://www.juntadeandalucia.es/educacion/portals/web/ced
 [3]: https://github.com/python-telegram-bot/python-telegram-bot
 [4]: http://josejuansanchez.org
+[5]: https://github.com/cbrgm/telegram-robot-rss/
