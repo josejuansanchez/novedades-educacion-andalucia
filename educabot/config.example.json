@@ -1,7 +1,7 @@
 {
-    "bot-token" : "PUT-YOUR-TELEGRAM-BOT-TOKEN-HERE",
+    "bot_token" : "PUT-YOUR-TELEGRAM-BOT-TOKEN-HERE",
 
-    "database" : "database/educabot.sqlite",
+    "database_path" : "database/educabot.sqlite",
     
     "urls" : [
         "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/",
