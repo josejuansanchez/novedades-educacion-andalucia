@@ -107,7 +107,7 @@ class EducaBot(object):
     def send_today_news_to_users(self):
         threading.Timer(3600, self.send_today_news_to_users).start()
         news = self.database.get_today_news()
-        users = self.database.get_users_id()
+        users = self.database.get_users_telegram_id()
 
         for new in news:
             text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']

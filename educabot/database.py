@@ -86,7 +86,7 @@ class DataBase(object):
         db.commit()
         db.close()
 
-    def get_users_id(self):
+    def get_users_telegram_id(self):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
         cursor.execute("SELECT telegram_id FROM user")
