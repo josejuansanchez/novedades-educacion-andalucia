@@ -52,7 +52,7 @@ def main():
     for source in rss.config['sources']:
         news = rss.get_news(source)
         rss.save_news_to_db(news)
-        print('Source parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
+        print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
 
 if __name__ == '__main__':
     main()
