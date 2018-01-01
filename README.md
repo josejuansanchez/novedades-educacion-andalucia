@@ -7,13 +7,13 @@
 Clonamos el repositorio:
 
 ```bash
-git clone https://github.com/josejuansanchez/novedades-profes-ja.git
+git clone https://github.com/josejuansanchez/novedades-educacion-andalucia.git
 ```
 
-Accedemos al directorio del proyecto:
+Accedemos al directorio `educabot`:
 
 ```bash
-cd novedades-profes-ja
+cd novedades-educacion-andalucia/educabot
 ```
 
 Creamos un nuevo archivo de configuración con el nombre `config.json` a partir del  archivo de ejemplo `config.example.json`:
@@ -57,9 +57,9 @@ Una vez que hemos creado el archivo `config.json` tenemos que configurar los par
 }
 ```
 
-## Creación de un entorno virtual con `virtualenv`
+## Instalación de un entorno virtual con `virtualenv`
 
-Instalamos `virtualenv` vía `pip`:
+Instalamos `virtualenv` con `pip3`:
 
 ```bash
 pip3 install virtualenv
@@ -70,6 +70,8 @@ Comprobamos que se ha instalado correctamente:
 ```bash
 virtualenv --version
 ```
+
+## Creación de un entorno virtual con `virtualenv`
 
 Creamos un entorno virtual para nuestro proyecto:
 
@@ -94,7 +96,7 @@ deactivate
 Instalamos los paquetes necesarios para trabajar con nuestro proyecto. La lista de paquetes está definida en el archivo `requirements.txt`:
 
 ```bash
-pip3 install -r requirements.txt
+(my_virtualenv)$ pip3 install -r requirements.txt
 ```
 
 ## Parseo de feeds RSS y ejecución el bot
@@ -102,15 +104,14 @@ pip3 install -r requirements.txt
 Para poder parsear los feeds RSS y guardar los datos en la base de datos ejecutaremos:
 
 ```bash
-(my_virtualenv)$  python3 rss.py
+(my_virtualenv)$ python3 rss.py
 ```
 
 Para ejecutar el bot:
 
 ```bash
-(my_virtualenv)$  python3 bot.py
+(my_virtualenv)$ python3 bot.py
 ```
-
 
 ## Referencias
 
