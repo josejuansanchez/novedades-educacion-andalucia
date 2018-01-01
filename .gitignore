@@ -3,3 +3,4 @@ __pycache__/
 _virtualenv/
 my_virtualenv/
 config.json
+*.sqlite
