@@ -1,2 +1,2 @@
-worker: python3 rss.py
-bot: python3 bot-heroku.py
+worker: cd educabot && python3 rss.py
+bot: cd educabot && python3 bot-heroku.py
