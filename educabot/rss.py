@@ -17,7 +17,7 @@ class RSS(object):
 
     def __init__(self):
         self.filehandler = FileHandler()
-        self.config = self.filehandler.load_json('config.json')
+        self.config = self.filehandler.load_json('settings/settings.json')
         self.database = DataBase(self.config['database_path'])
 
     def get_news(self, source):
