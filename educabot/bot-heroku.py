@@ -9,10 +9,11 @@ the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 """
 
-import os
 import json
 import logging
+import os
 import threading
+from datetime import datetime
 
 from telegram import ParseMode
 from telegram.ext import CommandHandler, Updater
@@ -54,6 +55,9 @@ class EducaBot(object):
 
         # log all errors
         self.dp.add_error_handler(self.error)
+
+        # Parse RSS
+        self.parse_rss()
 
         # Send today news to users
         self.send_today_news_to_users()
@@ -117,6 +121,14 @@ class EducaBot(object):
                 if not self.database.is_new_received_by_user(new['id'], user['telegram_id']):
                     self.dp.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
                     self.database.add_new_received_by_user(new['id'], user['telegram_id'])
+
+    def parse_rss(self):
+        threading.Timer(3600, self.parse_rss).start()
+        rss = RSS()
+        for source in rss.config['sources']:
+            news = rss.get_news(source)
+            rss.save_news_to_db(news)
+            print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
 
 if __name__ == '__main__':
     EducaBot()
