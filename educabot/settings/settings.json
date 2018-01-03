@@ -1,0 +1,22 @@
+{
+    "database_path" : "database/educabot.sqlite",
+
+    "sources" : [
+        {
+            "name" : "Alumnado",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/alumnado/-/-/true/AND/true/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Profesorado",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/profesorado/-/-/true/OR/_self/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Familias",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/familia/-/-/true/AND/false/ishare_noticefrom/DESC/"
+        },
+        {
+            "name" : "Centros",
+            "url" : "http://www.juntadeandalucia.es/educacion/portals/delegate/rss/ced/portalconsejeria/centro-1/-/-/true/OR/true/cm_modified/DESC/"
+        }        
+    ]
+}
