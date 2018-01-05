@@ -10,7 +10,7 @@ Clonamos el repositorio:
 git clone https://github.com/josejuansanchez/novedades-educacion-andalucia.git
 ```
 
-Accedemos al directorio `educabot`:
+Accedemos al directorio `config`:
 
 ```bash
 cd novedades-educacion-andalucia/educabot/config
@@ -111,28 +111,29 @@ Para iniciar el bot ejecutaremos:
 
 Instalaremos [Heroku CLI][7] para poder crear y administrar aplicaciones en [Heroku][6] desde la línea de comandos.
 
-El archivo `runtime.txt` contiene la versión de python con la que se ejecutará nuestro bot.
+El archivo [`runtime.txt`](runtime.txt) contiene la versión de python con la que se ejecutará nuestro bot.
 
 ```
 python-3.6.3
 ```
 
-El archivo `Procfile` contiene el comando que se ejecutará en [Heroku][6] para iniciar el bot.
+El archivo [`Procfile`](Procfile) contiene el comando que se ejecutará en [Heroku][6] para iniciar el bot.
 
 ```
 bot: cd educabot && python3 bot-heroku.py
 ```
 
-El archivo `bot-heroku.py` contiene el código del bot que desplegaremos en Heroku. En este archivo el token de Telegram se gestiona con una variable de entorno del sistema. En nuestro caso será la variable `BOT_TOKEN`.
+El archivo [`bot-heroku.py`](educabot/bot-heroku.py) contiene el código del bot que desplegaremos en Heroku. En este archivo el token de Telegram se gestiona con una variable de entorno del sistema. En nuestro caso será la variable `BOT_TOKEN`.
 
 ```python
 self.updater = Updater(os.environ['BOT_TOKEN'])
 ```
 
-
 ## Referencias
 
 * [Bots: An introduction for developers][1].
+* [Hosting telegram bot on Heroku for free.][8].
+* [Polling vs WebHooks in Telegram Bots][9].
 
 ## Créditos
 
@@ -169,3 +170,5 @@ limitations under the License.
 [5]: https://github.com/cbrgm/telegram-robot-rss/
 [6]: https://www.heroku.com
 [7]: https://devcenter.heroku.com/articles/heroku-cli
+[8]: https://github.com/Kylmakalle/heroku-telegram-bot
+[9]: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks]
