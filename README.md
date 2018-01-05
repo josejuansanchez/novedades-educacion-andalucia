@@ -13,7 +13,7 @@ git clone https://github.com/josejuansanchez/novedades-educacion-andalucia.git
 Accedemos al directorio `educabot`:
 
 ```bash
-cd novedades-educacion-andalucia/educabot
+cd novedades-educacion-andalucia/educabot/config
 ```
 
 Creamos un nuevo archivo de configuración con el nombre `config.json` a partir del  archivo de ejemplo `config.example.json`:
@@ -99,19 +99,36 @@ Instalamos los paquetes necesarios para trabajar con nuestro proyecto. La lista 
 (my_virtualenv)$ pip3 install -r requirements.txt
 ```
 
-## Parseo de feeds RSS y ejecución el bot
+## Ejecución el bot
 
-Para poder parsear los feeds RSS y guardar los datos en la base de datos ejecutaremos:
-
-```bash
-(my_virtualenv)$ python3 rss.py
-```
-
-Para ejecutar el bot:
+Para iniciar el bot ejecutaremos:
 
 ```bash
 (my_virtualenv)$ python3 bot.py
 ```
+
+## Cómo desplegar el bot en Heroku
+
+Instalaremos [Heroku CLI][7] para poder crear y administrar aplicaciones en [Heroku][6] desde la línea de comandos.
+
+El archivo `runtime.txt` contiene la versión de python con la que se ejecutará nuestro bot.
+
+```
+python-3.6.3
+```
+
+El archivo `Procfile` contiene el comando que se ejecutará en [Heroku][6] para iniciar el bot.
+
+```
+bot: cd educabot && python3 bot-heroku.py
+```
+
+El archivo `bot-heroku.py` contiene el código del bot que desplegaremos en Heroku. En este archivo el token de Telegram se gestiona con una variable de entorno del sistema. En nuestro caso será la variable `BOT_TOKEN`.
+
+```python
+self.updater = Updater(os.environ['BOT_TOKEN'])
+```
+
 
 ## Referencias
 
@@ -150,3 +167,5 @@ limitations under the License.
 [3]: https://github.com/python-telegram-bot/python-telegram-bot
 [4]: http://josejuansanchez.org
 [5]: https://github.com/cbrgm/telegram-robot-rss/
+[6]: https://www.heroku.com
+[7]: https://devcenter.heroku.com/articles/heroku-cli
