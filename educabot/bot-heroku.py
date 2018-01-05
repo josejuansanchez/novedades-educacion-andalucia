@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-#
+
 """
 This Bot uses the Updater class to handle the bot.
 
@@ -9,7 +9,6 @@ the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 """
 
-import json
 import logging
 import os
 import threading
@@ -25,16 +24,19 @@ from rss import RSS
 
 class EducaBot(object):
 
-    def __init__(self):
+    def __init__(self, config_file_path):
         # Enable logging
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
         self.logger = logging.getLogger(__name__)
 
+        # Configuration file path
+        self.config_file_path = config_file_path
+
         # Create a file handler and read the configuration file
         self.filehandler = FileHandler()
-        self.config = self.filehandler.load_json('config/config.heroku.json')
+        self.config = self.filehandler.load_json(self.config_file_path)
 
         # Create a database instance
         self.database = DataBase(self.config['database_path'])
@@ -124,11 +126,11 @@ class EducaBot(object):
 
     def parse_rss(self):
         threading.Timer(3600, self.parse_rss).start()
-        rss = RSS()
+        rss = RSS(self.config_file_path)
         for source in rss.config['sources']:
             news = rss.get_news(source)
             rss.save_news_to_db(news)
             print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
 
 if __name__ == '__main__':
-    EducaBot()
+    EducaBot('config/config.heroku.json')

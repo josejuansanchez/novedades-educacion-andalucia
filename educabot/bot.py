@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-#
+
 """
 This Bot uses the Updater class to handle the bot.
 
@@ -9,29 +9,34 @@ the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 """
 
-import json
 import logging
+import os
 import threading
+from datetime import datetime
 
 from telegram import ParseMode
 from telegram.ext import CommandHandler, Updater
 
 from database import DataBase
 from filehandler import FileHandler
+from rss import RSS
 
 
 class EducaBot(object):
 
-    def __init__(self):
+    def __init__(self, config_file_path):
         # Enable logging
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
         self.logger = logging.getLogger(__name__)
 
+        # Configuration file path
+        self.config_file_path = config_file_path
+
         # Create a file handler and read the configuration file
         self.filehandler = FileHandler()
-        self.config = self.filehandler.load_json('config/config.json')
+        self.config = self.filehandler.load_json(self.config_file_path)
 
         # Create a database instance
         self.database = DataBase(self.config['database_path'])
@@ -52,6 +57,9 @@ class EducaBot(object):
 
         # log all errors
         self.dp.add_error_handler(self.error)
+
+        # Parse RSS
+        self.parse_rss()
 
         # Send today news to users
         self.send_today_news_to_users()
@@ -116,5 +124,13 @@ class EducaBot(object):
                     self.dp.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
                     self.database.add_new_received_by_user(new['id'], user['telegram_id'])
 
+    def parse_rss(self):
+        threading.Timer(3600, self.parse_rss).start()
+        rss = RSS(self.config_file_path)
+        for source in rss.config['sources']:
+            news = rss.get_news(source)
+            rss.save_news_to_db(news)
+            print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
+
 if __name__ == '__main__':
-    EducaBot()
+    EducaBot('config/config.json')
