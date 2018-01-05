@@ -34,7 +34,7 @@ class EducaBot(object):
 
         # Create a file handler and read the configuration file
         self.filehandler = FileHandler()
-        self.config = self.filehandler.load_json('settings/settings.heroku.json')
+        self.config = self.filehandler.load_json('config/config.heroku.json')
 
         # Create a database instance
         self.database = DataBase(self.config['database_path'])
