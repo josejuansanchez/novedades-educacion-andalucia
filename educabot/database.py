@@ -1,7 +1,9 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import sqlite3
 
 from filehandler import FileHandler
-
 
 class DataBase(object):
 
