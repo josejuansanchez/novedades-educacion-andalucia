@@ -1,10 +1,5 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
-import json
-import sqlite3
-import sys
-import threading
-from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -15,9 +10,9 @@ from filehandler import FileHandler
 
 class RSS(object):
 
-    def __init__(self):
+    def __init__(self, config_file_path):
         self.filehandler = FileHandler()
-        self.config = self.filehandler.load_json('settings/settings.json')
+        self.config = self.filehandler.load_json(config_file_path)
         self.database = DataBase(self.config['database_path'])
 
     def get_news(self, source):
@@ -41,18 +36,3 @@ class RSS(object):
 
     def save_news_to_db(self, news):
         self.database.add_news(news)
-
-
-def main():
-
-    threading.Timer(3600, main).start()
-
-    rss = RSS()
-
-    for source in rss.config['sources']:
-        news = rss.get_news(source)
-        rss.save_news_to_db(news)
-        print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
-
-if __name__ == '__main__':
-    main()
