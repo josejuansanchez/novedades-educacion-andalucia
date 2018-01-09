@@ -14,12 +14,14 @@ import os
 import threading
 from datetime import datetime
 
+import cherrypy
 from telegram import ParseMode
 from telegram.ext import CommandHandler, Updater
 
 from database import DataBase
 from filehandler import FileHandler
 from rss import RSS
+from website import SimpleWebsite
 
 
 class EducaBot(object):
@@ -63,6 +65,14 @@ class EducaBot(object):
 
         # Send today news to users
         self.send_today_news_to_users()
+
+        # Simple web site to check if the bot is running on Heroku
+        self.website = SimpleWebsite()
+
+        # Start the web server
+        cherrypy.config.update({'server.socket_host' : '0.0.0.0'})
+        cherrypy.config.update({'server.socket_port' : int(os.environ.get('PORT', 5000))})
+        cherrypy.quickstart(SimpleWebsite(), '/')
 
         # Start the Bot
         self.updater.start_polling()
