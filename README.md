@@ -207,5 +207,5 @@ limitations under the License.
 [6]: https://www.heroku.com
 [7]: https://devcenter.heroku.com/articles/heroku-cli
 [8]: https://github.com/Kylmakalle/heroku-telegram-bot
-[9]: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks]
+[9]: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks
 [10]: https://devcenter.heroku.com/articles/git
