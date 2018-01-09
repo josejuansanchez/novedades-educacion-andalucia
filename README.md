@@ -2,6 +2,17 @@
 
 [Bot de Telegram][1] para recibir las últimas noticias publicadas en la página web de la [Consejería de Educación de la Junta de Andalucía][2].
 
+* [Creación del archivo `config.json`](#creación-del-archivo-configjson)
+* [Configuración del archivo `config.json`](#configuración-del-archivo-configjson)
+* [Instalación de un entorno virtual con `virtualenv`](#instalación-de-un-entorno-virtual-con-virtualenv)
+* [Creación de un entorno virtual con `virtualenv`](#creación-de-un-entorno-virtual-con-virtualenv)
+* [Instalación de dependencias](#instalación-de-dependencias)
+* [Ejecución el bot](#ejecución-el-bot)
+* [Requisitos para desplegar el bot en Heroku](#requisitos-para-desplegar-el-bot-en-heroku)
+* [Cómo desplegar el bot en Heroku](#cómo-desplegar-el-bot-en-heroku)
+* [Referencias](#referencias)
+* [Créditos](#creditos)
+
 ## Creación del archivo `config.json`
 
 Clonamos el repositorio:
@@ -168,15 +179,15 @@ Puedes encontrar más información sobre cómo desplegar con Git en Heroku en la
 ## Referencias
 
 * [Bots: An introduction for developers][1].
-* [Hosting telegram bot on Heroku for free.][8].
+* [Hosting telegram bot on Heroku for free][8].
 * [Polling vs WebHooks in Telegram Bots][9].
 
 ## Créditos
 
+Se han utilizado los siguientes ejemplos y librerías:
+
 * [`python-telegram-bot`][3].
 * [RobotRSS - A Telegram RSS Bot][5].
-
-## Créditos
 
 Este bot ha sido desarrollado por [José Juan Sánchez][4].
 
