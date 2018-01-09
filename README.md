@@ -1,17 +1,21 @@
-# novedades_educacion_andalucia
+# EducaBot - Bot de Telegram
 
 [Bot de Telegram][1] para recibir las últimas noticias publicadas en la página web de la [Consejería de Educación de la Junta de Andalucía][2].
 
-* [Creación del archivo `config.json`](#creación-del-archivo-configjson)
-* [Configuración del archivo `config.json`](#configuración-del-archivo-configjson)
-* [Instalación de un entorno virtual con `virtualenv`](#instalación-de-un-entorno-virtual-con-virtualenv)
-* [Creación de un entorno virtual con `virtualenv`](#creación-de-un-entorno-virtual-con-virtualenv)
-* [Instalación de dependencias](#instalación-de-dependencias)
-* [Ejecución el bot](#ejecución-el-bot)
-* [Requisitos para desplegar el bot en Heroku](#requisitos-para-desplegar-el-bot-en-heroku)
-* [Cómo desplegar el bot en Heroku](#cómo-desplegar-el-bot-en-heroku)
+## Índice de contenidos
+
+* `bot.py`
+  * [Creación del archivo `config.json`](#creación-del-archivo-configjson)
+  * [Configuración del archivo `config.json`](#configuración-del-archivo-configjson)
+  * [Instalación de un entorno virtual con `virtualenv`](#instalación-de-un-entorno-virtual-con-virtualenv)
+  * [Creación de un entorno virtual con `virtualenv`](#creación-de-un-entorno-virtual-con-virtualenv)
+  * [Instalación de dependencias](#instalación-de-dependencias)
+  * [Ejecución el bot](#ejecución-el-bot)
+* `bot-heroku.py`
+  * [Requisitos para desplegar el bot en Heroku](#requisitos-para-desplegar-el-bot-en-heroku)
+  * [Cómo desplegar el bot en Heroku](#cómo-desplegar-el-bot-en-heroku)
 * [Referencias](#referencias)
-* [Créditos](#creditos)
+* [Créditos](#créditos)
 
 ## Creación del archivo `config.json`
 
