@@ -107,17 +107,19 @@ Para iniciar el bot ejecutaremos:
 (my_virtualenv)$ python3 bot.py
 ```
 
-## Cómo desplegar el bot en Heroku
+## Requisitos para desplegar el bot en Heroku
 
 Instalaremos [Heroku CLI][7] para poder crear y administrar aplicaciones en [Heroku][6] desde la línea de comandos.
 
-El archivo [`runtime.txt`](runtime.txt) contiene la versión de python con la que se ejecutará nuestro bot.
+También vamos a necesitar dos archivos especiales: [`runtime.txt`](runtime.txt) y [`Procfile`](Procfile).
+
+* El archivo [`runtime.txt`](runtime.txt) contiene la versión de python con la que se ejecutará nuestro bot.
 
 ```
-python-3.6.3
+python-3.6.4
 ```
 
-El archivo [`Procfile`](Procfile) contiene el comando que se ejecutará en [Heroku][6] para iniciar el bot.
+* El archivo [`Procfile`](Procfile) contiene el comando que se ejecutará en [Heroku][6] para iniciar el bot.
 
 ```
 bot: cd educabot && python3 bot-heroku.py
@@ -128,6 +130,40 @@ El archivo [`bot-heroku.py`](educabot/bot-heroku.py) contiene el código del bot
 ```python
 self.updater = Updater(os.environ['BOT_TOKEN'])
 ```
+
+Esta variable se puede configurar desde la línea de comandos con las utilidades que hemos instalado con [Heroku CLI][7] o también se puede configurar desde el panel de control web donde administramos nuestras aplicaciones en [Heroku][6].
+
+Por ejemplo, desde la línea de comandos con [Heroku CLI][7] ejecutaríamos:
+
+```bash
+heroku config:set BOT_TOKEN=123456789:AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLL
+```
+
+## Cómo desplegar el bot en Heroku
+
+La secuencia de comandos que habría que ejecutar para desplegar el bot en [Heroku][6] es la siguiente:
+
+```bash
+heroku login
+heroku create --region eu novedades-educacion-bot
+git push heroku master
+heroku config:set BOT_TOKEN=123456789:AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLL
+heroku ps:scale bot=1
+```
+
+Para consultar el archivo de log podemos usar:
+
+```bash
+heroku logs --tail
+```
+
+Para detener la ejecución del bot usamos:
+
+```bash
+heroku ps:stop bot
+```
+
+Puedes encontrar más información sobre cómo desplegar con Git en Heroku en la [documentación oficial][10].
 
 ## Referencias
 
@@ -172,3 +208,4 @@ limitations under the License.
 [7]: https://devcenter.heroku.com/articles/heroku-cli
 [8]: https://github.com/Kylmakalle/heroku-telegram-bot
 [9]: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks]
+[10]: https://devcenter.heroku.com/articles/git
