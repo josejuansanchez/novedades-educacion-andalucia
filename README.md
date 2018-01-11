@@ -193,6 +193,8 @@ Se han utilizado los siguientes ejemplos y librerías:
 * [`python-telegram-bot`][3].
 * [RobotRSS - A Telegram RSS Bot][5].
 
+## Autor
+
 Este bot ha sido desarrollado por [José Juan Sánchez][4].
 
 ## Licencia
