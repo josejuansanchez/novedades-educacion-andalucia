@@ -10,7 +10,6 @@ Then, the bot is started and runs until we press Ctrl-C on the command line.
 """
 
 import logging
-import os
 import threading
 from datetime import datetime
 
