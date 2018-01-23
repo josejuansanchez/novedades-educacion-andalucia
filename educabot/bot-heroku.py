@@ -55,6 +55,11 @@ class EducaBot(object):
         self.dp.add_handler(CommandHandler("last", self.last))
         self.dp.add_handler(CommandHandler("all", self.all))
 
+        # Temporary
+        self.dp.add_handler(CommandHandler("users", self.users))
+        self.dp.add_handler(CommandHandler("news", self.news))
+        self.dp.add_handler(CommandHandler("receives", self.receives))
+
         # log all errors
         self.dp.add_error_handler(self.error)
 
@@ -131,6 +136,25 @@ class EducaBot(object):
             news = rss.get_news(source)
             rss.save_news_to_db(news)
             print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
+
+    # Temporary
+    def users(self, bot, update):
+        users = self.database.get_all_users()
+        for user in users:
+            text = '<b>' + str(user['telegram_id']) + '</b>\n\n' + user['username'] + '\n\n' + user['first_name']
+            update.message.reply_text(text, ParseMode.HTML)
+
+    def news(self, bot, update):
+        news = self.database.get_all_news()
+        for new in news:
+            text = '<b>' + str(new['id']) + '</b>\n\n' + new['title'] + '\n\n' + new['date']
+            update.message.reply_text(text, ParseMode.HTML)
+
+    def receives(self, bot, update):
+        receives = self.database.get_all_receives()
+        for receive in receives:
+            text = '<b>' + str(receive['telegram_id']) + '</b>\n\n' + str(receive['new_id'])
+            update.message.reply_text(text, ParseMode.HTML)
 
 if __name__ == '__main__':
     EducaBot('config/config.heroku.json')

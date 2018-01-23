@@ -70,23 +70,33 @@ class DataBase(object):
         return self.get_news(query)
 
     def get_all_news(self):
-        query = "SELECT * FROM news ORDER BY date DESC"
+        query = "SELECT * FROM news ORDER BY id ASC"
         return self.get_news(query)
 
-    def add_user(self, user):
-        db = sqlite3.connect(self.database_path)
-        cursor = db.cursor()        
-        cursor.execute("INSERT OR IGNORE INTO user VALUES (?,?,?,?,?,?)",
-                       (user.id, user.username, user.first_name, user.last_name, user.language_code, user.is_bot))
-        db.commit()
-        db.close()
-
-    def delete_user(self, id):
+    def get_users(self, query):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
-        cursor.execute("DELETE FROM user WHERE telegram_id = ?", (id,))
-        db.commit()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        users = []
+        for row in rows:
+            user = {
+                'telegram_id': row[0],
+                'username': row[1],
+                'first_name': row[2],
+                'last_name': row[3],
+                'language_code': row[4],
+                'is_bot': row[5]
+            }
+            users.append(user)
+
         db.close()
+        return users
+
+    def get_all_users(self):
+        query = "SELECT * FROM user"
+        return self.get_users(query)
 
     def get_users_telegram_id(self):
         db = sqlite3.connect(self.database_path)
@@ -104,6 +114,21 @@ class DataBase(object):
         db.close()
         return users
 
+    def add_user(self, user):
+        db = sqlite3.connect(self.database_path)
+        cursor = db.cursor()        
+        cursor.execute("INSERT OR IGNORE INTO user VALUES (?,?,?,?,?,?)",
+                       (user.id, user.username, user.first_name, user.last_name, user.language_code, user.is_bot))
+        db.commit()
+        db.close()
+
+    def delete_user(self, id):
+        db = sqlite3.connect(self.database_path)
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM user WHERE telegram_id = ?", (id,))
+        db.commit()
+        db.close()
+
     def is_new_received_by_user(self, new_id, user_id):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
@@ -119,3 +144,24 @@ class DataBase(object):
         cursor.execute("INSERT OR IGNORE INTO receives VALUES (?,?)", (user_id, new_id))
         db.commit()
         db.close()
+
+    def get_receives(self, query):
+        db = sqlite3.connect(self.database_path)
+        cursor = db.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        users = []
+        for row in rows:
+            user = {
+                'telegram_id': row[0],
+                'new_id': row[1]
+            }
+            users.append(user)
+
+        db.close()
+        return users
+
+    def get_all_receives(self):
+        query = "SELECT * FROM receives"
+        return self.get_receives(query)
