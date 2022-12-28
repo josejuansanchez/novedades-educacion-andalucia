@@ -13,8 +13,9 @@ import logging
 import threading
 from datetime import datetime
 
-from telegram import ParseMode
-from telegram.ext import CommandHandler, Updater
+from telegram import Update
+from telegram.constants import ParseMode
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 from database import DataBase
 from filehandler import FileHandler
@@ -40,22 +41,19 @@ class EducaBot(object):
         # Create a database instance
         self.database = DataBase(self.config['database_path'])
 
-        # Create the EventHandler and pass it your bot's token.
-        self.updater = Updater(self.config['bot_token'])
-
-        # Get the dispatcher to register handlers
-        self.dp = self.updater.dispatcher
+        # Create the Application and pass it your bot's token.
+        self.application = Application.builder().token(self.config['bot_token']).build()
 
         # on different commands - answer in Telegram
-        self.dp.add_handler(CommandHandler("start", self.start))
-        self.dp.add_handler(CommandHandler("stop", self.stop))
-        self.dp.add_handler(CommandHandler("help", self.help))
-        self.dp.add_handler(CommandHandler("today", self.today))
-        self.dp.add_handler(CommandHandler("last", self.last))
-        self.dp.add_handler(CommandHandler("all", self.all))
+        self.application.add_handler(CommandHandler("start", self.start))
+        self.application.add_handler(CommandHandler("stop", self.stop))
+        self.application.add_handler(CommandHandler("help", self.help))
+        self.application.add_handler(CommandHandler("today", self.today))
+        self.application.add_handler(CommandHandler("last", self.last))
+        self.application.add_handler(CommandHandler("all", self.all))
 
-        # log all errors
-        self.dp.add_error_handler(self.error)
+        # Register the error handler
+        self.application.add_error_handler(self.error_handler)
 
         # Parse RSS
         self.parse_rss()
@@ -63,52 +61,53 @@ class EducaBot(object):
         # Send today news to users
         self.send_today_news_to_users()
 
-        # Start the Bot
-        self.updater.start_polling()
+        # Start the Bot until the user presses Ctrl-C
+        self.application.run_polling()
 
-        # Run the bot until you press Ctrl-C or the process receives SIGINT,
-        # SIGTERM or SIGABRT. This should be used most of the time, since
-        # start_polling() is non-blocking and will stop the bot gracefully.
-        self.updater.idle()
-
-    def start(self, bot, update):
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.message.from_user
         self.database.add_user(user)
-        update.message.reply_text('¡Suscripción realizada correctamente!')
+        text = '¡Suscripción realizada correctamente!'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    def stop(self, bot, update):
+    async def stop(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.message.from_user
         self.database.delete_user(user.id)
-        update.message.reply_text('Suscripción cancelada')
+        text = 'Suscripción cancelada'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    def help(self, bot, update):
-        update.message.reply_text('Help!')
+    async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        text = 'Help!'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
-    def error(self, bot, update, error):
-        self.logger.warn('Update "%s" caused error "%s"' % (update, error))
+    async def error_handler(self, update: object, context: ContextTypes.DEFAULT_TYPE):
+        #self.logger.warn('Update "%s" caused error "%s"' % (update, error))
+        self.logger.error(msg="Exception while handling an update:", exc_info=context.error)
 
-    def today(self, bot, update):
+    async def today(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         news = self.database.get_today_news()
 
         if (len(news) <= 0):
-            update.message.reply_text("Sin novedades")
+            text = 'Sin novedades'
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
             return
 
         for new in news:
             text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
-            update.message.reply_text(text, ParseMode.HTML)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
-    def last(self, bot, update):
+    async def last(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         news = self.database.get_last_news()
         for new in news:
             text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
-            update.message.reply_text(text, ParseMode.HTML)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
-    def all(self, bot, update):
+    async def all(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         news = self.database.get_all_news()
         for new in news:
             text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
-            update.message.reply_text(text, ParseMode.HTML)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
     def send_today_news_to_users(self):
         threading.Timer(3600, self.send_today_news_to_users).start()
