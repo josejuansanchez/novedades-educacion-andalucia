@@ -1,0 +1,12 @@
+{
+    "bot_token" : "427720521:AAHmaDb2kQ0IhZnPYypf-5fS-AihtdZtT54",
+
+    "database_path" : "database/educabot.sqlite",
+
+    "sources" : [
+        {
+            "name" : "La Voz de Almería",
+            "url" : "https://www.lavozdealmeria.com/rss/generaterss"
+        }        
+    ]
+}
