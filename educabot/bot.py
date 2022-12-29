@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import threading
 from datetime import datetime
 
-from telegram import Update
+from telegram import Update, InputMediaPhoto
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -43,19 +42,22 @@ class EducaBot(object):
         self.application.add_handler(CommandHandler("today", self.today))
         self.application.add_handler(CommandHandler("last", self.last))
         self.application.add_handler(CommandHandler("all", self.all))
+        
+        # Temporary command
+        #self.application.add_handler(CommandHandler("test", self.test))
 
         # Register the error handler
         self.application.add_error_handler(self.error_handler)
 
         # Create a job queue
         self.job_queue = self.application.job_queue
-        
-        # Create a job to send today news to users 
-        self.job_queue.run_repeating(self.send_today_news_to_users, interval=3600, first=10)
-        
+
         # Create a job to parse RSS
         self.job_queue.run_repeating(self.parse_rss, interval=3600, first=10)
 
+        # Create a job to send today news to users 
+        self.job_queue.run_repeating(self.send_today_news_to_users, interval=3600, first=30)
+        
         # Start the Bot until the user presses Ctrl-C
         self.application.run_polling()
 
@@ -115,12 +117,27 @@ class EducaBot(object):
                     await context.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
                     self.database.add_new_received_by_user(new['id'], user['telegram_id'])
 
-    def parse_rss(self, context: ContextTypes.DEFAULT_TYPE):
+    async def parse_rss(self, context: ContextTypes.DEFAULT_TYPE):
         rss = RSS(self.config_file_path)
         for source in rss.config['sources']:
             news = rss.get_news(source)
             rss.save_news_to_db(news)
             print('Source: ' + source['name'] + ' parsed at: ' + str(datetime.now()) + '. ' + str(len(news)) + ' items found')
+
+    # Temporary method
+    async def test(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        rss = RSS(self.config_file_path)
+        for source in rss.config['sources']:
+            news = rss.get_news_from_lavoz(source)  
+
+            for new in news:  
+                text = '<b><a href="https://12ft.io/proxy?q=' + new['link'] + '">' + new['title'] + '</a></b>\n\n' + new['description'] + '\n\n' + new['source_name'] + '. ' + new['date']
+
+                media = [
+                    InputMediaPhoto(media=new['image'], caption=text, parse_mode=ParseMode.HTML)
+                ]
+
+                await context.bot.send_media_group(chat_id=update.effective_chat.id, media=media)
 
 if __name__ == '__main__':
     EducaBot('config/config.json')
