@@ -1,5 +1,5 @@
 {
-    "bot_token" : "427720521:AAHmaDb2kQ0IhZnPYypf-5fS-AihtdZtT54",
+    "bot_token" : "PUT-YOUR-TELEGRAM-BOT-TOKEN-HERE",
 
     "database_path" : "database/educabot.sqlite",
 
