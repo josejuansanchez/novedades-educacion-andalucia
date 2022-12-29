@@ -116,7 +116,6 @@ class EducaBot(object):
                     self.database.add_new_received_by_user(new['id'], user['telegram_id'])
 
     def parse_rss(self, context: ContextTypes.DEFAULT_TYPE):
-        threading.Timer(3600, self.parse_rss).start()
         rss = RSS(self.config_file_path)
         for source in rss.config['sources']:
             news = rss.get_news(source)
