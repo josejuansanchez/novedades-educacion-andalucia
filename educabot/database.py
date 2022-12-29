@@ -95,13 +95,13 @@ class DataBase(object):
         return users
 
     def get_all_users(self):
-        query = "SELECT * FROM user"
+        query = "SELECT * FROM users"
         return self.get_users(query)
 
     def get_users_telegram_id(self):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
-        cursor.execute("SELECT telegram_id FROM user")
+        cursor.execute("SELECT telegram_id FROM users")
         rows = cursor.fetchall()
 
         users = []
@@ -117,7 +117,7 @@ class DataBase(object):
     def add_user(self, user):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()        
-        cursor.execute("INSERT OR IGNORE INTO user VALUES (?,?,?,?,?,?)",
+        cursor.execute("INSERT OR IGNORE INTO users VALUES (?,?,?,?,?,?)",
                        (user.id, user.username, user.first_name, user.last_name, user.language_code, user.is_bot))
         db.commit()
         db.close()
@@ -125,14 +125,14 @@ class DataBase(object):
     def delete_user(self, id):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
-        cursor.execute("DELETE FROM user WHERE telegram_id = ?", (id,))
+        cursor.execute("DELETE FROM users WHERE telegram_id = ?", (id,))
         db.commit()
         db.close()
 
     def is_new_received_by_user(self, new_id, user_id):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM receives WHERE telegram_id = ? AND new_id = ?", (user_id, new_id))
+        cursor.execute("SELECT * FROM news_received_by_user WHERE telegram_id = ? AND new_id = ?", (user_id, new_id))
         rows = cursor.fetchall()
         db.commit()
         db.close()
@@ -141,7 +141,7 @@ class DataBase(object):
     def add_new_received_by_user(self, new_id, user_id):
         db = sqlite3.connect(self.database_path)
         cursor = db.cursor()        
-        cursor.execute("INSERT OR IGNORE INTO receives VALUES (?,?)", (user_id, new_id))
+        cursor.execute("INSERT OR IGNORE INTO news_received_by_user VALUES (?,?)", (user_id, new_id))
         db.commit()
         db.close()
 
@@ -162,6 +162,6 @@ class DataBase(object):
         db.close()
         return users
 
-    def get_all_receives(self):
-        query = "SELECT * FROM receives"
+    def get_all_news_received_by_user(self):
+        query = "SELECT * FROM news_received_by_user"
         return self.get_receives(query)

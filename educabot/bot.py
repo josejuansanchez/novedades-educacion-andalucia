@@ -1,14 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""
-This Bot uses the Updater class to handle the bot.
-
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-"""
-
 import logging
 import threading
 from datetime import datetime
@@ -55,11 +47,14 @@ class EducaBot(object):
         # Register the error handler
         self.application.add_error_handler(self.error_handler)
 
-        # Parse RSS
-        self.parse_rss()
-
-        # Send today news to users
-        self.send_today_news_to_users()
+        # Create a job queue
+        self.job_queue = self.application.job_queue
+        
+        # Create a job to send today news to users 
+        self.job_queue.run_repeating(self.send_today_news_to_users, interval=3600, first=10)
+        
+        # Create a job to parse RSS
+        self.job_queue.run_repeating(self.parse_rss, interval=3600, first=10)
 
         # Start the Bot until the user presses Ctrl-C
         self.application.run_polling()
@@ -90,7 +85,6 @@ class EducaBot(object):
         if (len(news) <= 0):
             text = 'Sin novedades'
             await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-
             return
 
         for new in news:
@@ -109,8 +103,7 @@ class EducaBot(object):
             text = '<b>' + new['source_name'] + '</b>\n\n' + new['title'] + '\n\n' + new['link']
             await context.bot.send_message(chat_id=update.effective_chat.id, text=text, parse_mode=ParseMode.HTML)
 
-    def send_today_news_to_users(self):
-        threading.Timer(3600, self.send_today_news_to_users).start()
+    async def send_today_news_to_users(self, context: ContextTypes.DEFAULT_TYPE):
         news = self.database.get_today_news()
         users = self.database.get_users_telegram_id()
 
@@ -119,10 +112,10 @@ class EducaBot(object):
 
             for user in users:
                 if not self.database.is_new_received_by_user(new['id'], user['telegram_id']):
-                    self.dp.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
+                    await context.bot.send_message(chat_id=user['telegram_id'], text=text, parse_mode=ParseMode.HTML)
                     self.database.add_new_received_by_user(new['id'], user['telegram_id'])
 
-    def parse_rss(self):
+    def parse_rss(self, context: ContextTypes.DEFAULT_TYPE):
         threading.Timer(3600, self.parse_rss).start()
         rss = RSS(self.config_file_path)
         for source in rss.config['sources']:
