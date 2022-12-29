@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE users (
 	telegram_id INTEGER PRIMARY KEY UNIQUE,
 	username VARCHAR(128) NOT NULL,
 	first_name VARCHAR(128),
@@ -15,10 +15,12 @@ CREATE TABLE news (
 	source_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE receives (
+CREATE TABLE news_received_by_user (
 	telegram_id INTEGER NOT NULL,
 	new_id INTEGER NOT NULL,
 	PRIMARY KEY (telegram_id, new_id),
-	FOREIGN KEY (telegram_id) REFERENCES user(telegram_id),
+	FOREIGN KEY (telegram_id) REFERENCES user(telegram_id)
+	ON DELETE CASCADE,
 	FOREIGN KEY (new_id) REFERENCES news(id)
+	ON DELETE CASCADE
 )
